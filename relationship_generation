@@ -1,0 +1,587 @@
+#IAN WATER AND FLUXES
+
+
+#RELATIONSHIP BETWEEN MSL and GWT
+
+#geom_point_with_multiple_lineR2
+
+library(rlang)
+library(ggplot2)
+library(reshape)
+library(ggpmisc)
+library(dplyr) 
+library(ggplot2)
+library(devtools)
+require(ggplot2)
+require(plyr)
+library(ggplot2)
+library(reshape)
+library(ggpmisc)
+library(dplyr) 
+library(ggplot2)
+library(devtools)
+library (RColorBrewer)
+
+my_data <- read.csv("~/1_NCSU_files/ES_400_Mentoring/Student_project/Ian/monthly_fluxes_tide_facet.csv")
+str (my_data)
+
+my_data$level<-as.factor (my_data$level)
+month = my_data$month
+year = my_data$year
+level = my_data$level
+nee = my_data$nee
+gpp = my_data$gpp
+re = my_data$re
+gwl = my_data$gwl
+msl = my_data$msl
+tide = my_data$tide
+tidevalue = my_data$tidevalue
+
+my_data = data.frame(month, year, level, nee, re, gpp, gwl, msl, tide, tidevalue)
+
+
+my_data$tide
+(my_data$tide <- factor(my_data$tide, levels=c('MLW','MHW'),
+                        ordered = TRUE))
+levels(my_data$tide) <- c("Low tide","High tide")
+
+
+formula = y~x
+#formula <- y ~ poly(x, 2)
+#formula= y~exp(x)
+#formula = y~log(x)
+#formula = y~poly(x, 2)
+
+p<- ggplot(my_data, aes(x=tidevalue, y=gwl))+
+  #,color=, fill=tide)) + 
+  geom_point(size = 5, color="orange") +
+  #scale_colour_brewer(palette="Dark2")+
+  #facet_grid(~site, scale="free")+ theme_bw()+ 
+  stat_poly_eq(aes(x=tidevalue, y=gwl, label =  paste(..eq.label.., ..rr.label.., sep = "~~~~")),
+               formula = formula, rr.digits = 2, coef.digits = 3, parse = TRUE, 
+               size = 8,label.x.npc = "left",
+               vstep = 0.05)+ # sets vertical spacing
+  #label.x = 6, label.y = 20)+
+  geom_vline(xintercept = 0)+
+  geom_hline(yintercept = 0)+
+  stat_smooth(method = "lm", formula = y ~ x, size = 1.75, fill="transparent", alpha=0, color="black") +
+  #stat_smooth(method = "lm", formula = y ~ log(x), size = 1, fill="transparent", alpha=0) +
+  #stat_smooth(method = "lm", formula = y ~ poly(x,2), size = 2, fill="transparent", alpha=0) +
+  #stat_smooth(method = "lm", formula = y ~ exp(x), size = 2, fill="transparent", alpha=0) +
+  scale_y_continuous(limits=c(-8, 14), breaks=seq(-8, 10,4)) +
+  scale_x_continuous(limits=c(-30, 50), breaks=seq(-30, 50, 10)) +
+  labs(y=expression(Groundwater~level~(cm)))+
+  labs(x=expression(Mean~sea~level~(cm)))+
+  theme_bw(base_family = "Arial", base_size = 22) +
+  theme(panel.grid.minor = element_blank()) +
+  theme(panel.grid.major = element_blank()) + 
+  theme(panel.border = element_rect(size=1, color='black'))
+p
+
+p1 <- p + guides(fill = FALSE, size = FALSE)
+p1
+
+p2<- p1+ theme(legend.background = element_blank(),
+               #legend.text=element_text(size=14),
+               legend.title=element_blank ())
+p2
+
+p3<- p2 + theme(
+  legend.position = c(0.12, 0.90))
+p3
+
+#
+#---------------------------
+
+#MONTHLY SEALEVEL AND WATERLEVEL
+# Libraries
+library(ggplot2)
+library(dplyr)
+library(patchwork) # To display 2 charts together
+library(hrbrthemes)
+
+data <- read.csv("~/1_NCSU_files/ES_400_Mentoring/Student_project/Ian/monthly_fluxes_waterlevel.csv")
+str (data)
+#View (data)
+gwl <- data$gwl
+msl<- data$msl
+series <- data$series
+year<- data$year
+nee<-data$nee
+data = data.frame(gwl, msl, year, nee)
+
+
+p <- ggplot(data, aes(x = series))
+p <- p + 
+  geom_line(aes(y = msl, size="msl", color = "Mean sea level"))+
+  geom_line(aes(y = gwl,  size="gwl", color = "Groundwater table depth "))+
+  #geom_line(aes(y = nee,  size="nee", color = "NEE"))+
+  scale_size_discrete(range = c(2, 2))+
+  #scale_size_continuous(range = 1)+
+  scale_x_continuous(limits=c(1, 132), breaks=seq(1,132,12))+
+  scale_y_continuous(limits=c(-20, 40), breaks=seq(-40,40,10))+
+  xlab("Year") + 
+  ylab("Water level (cm)") +
+  theme_bw(base_family = "Arial", base_size = 18) +
+  theme(panel.grid.minor = element_blank()) +
+  theme(panel.grid.major = element_blank()) + 
+  theme(panel.border = element_rect(size=1, color='black'))
+# coord_flip() # Flipping the coordinates for a better view. 
+
+p
+
+
+p1<-p + scale_x_continuous (breaks=c(1,13,25,37,49,61,73,85,97), 
+                            #name = (Year), 
+                            labels=c("2009","", "2011", "", "2013","", "2015", "", "2017"))
+p1
+
+p2<-p1 + guides(size = FALSE)
+p2
+
+p3<- p2 + theme(
+  legend.title = element_blank())
+p3
+
+p4<-p3 + theme(
+  legend.position = c(0.20, 0.90))
+p4
+
+p5<- p4+ geom_hline(yintercept = 0)
+p5
+
+#-----------------
+
+library(ggplot2)
+library(dplyr)
+#library(patchwork) # To display 2 charts together
+library(hrbrthemes)
+
+#DAILY sealevel and groundwaterlevel timeseries
+data <- read.csv("~/1_NCSU_files/ES_400_Mentoring/Student_project/Ian/sealevel_timeseries.csv")
+setwd("~/1_NCSU_files/ES_400_Mentoring/Student_project/Ian")
+data<- read.csv("sealevel_timeseries.csv")
+str (data)
+
+data$SL<- as.numeric(data$SL)
+
+GPP<- data$GPP
+RE<- data$RE
+NEE<- data$NEE
+series<-data$series
+GWL<-data$GWL
+SL<-data$SL
+
+data = data.frame(GPP, RE, NEE, GWL, SL, series )
+
+
+first_plot <- ggplot(data, aes(x = series))
+first_plot <- first_plot + 
+  geom_line(aes(y = GWL,   color = "Mean groundwater level"))+
+  geom_line(aes(y = SL,   color = "Mean sea level"))+
+  #geom_line(aes(y = NEE,   color = "NEE "))+
+  #scale_x_continuous(limits=c(1, 4016), breaks=seq(1,4016,365))+
+  scale_y_continuous(limits=c(-20, 60), breaks=seq(-20,60,20))+
+  xlab("Year") + 
+  labs(y=expression(Water~level~(cm)))+
+  
+  theme_bw(base_family = "Arial", base_size = 18) +
+  theme(panel.grid.minor = element_blank()) +
+  theme(panel.grid.major = element_blank()) + 
+  theme(panel.border = element_rect(size=1, color='black'))
+# coord_flip() # Flipping the coordinates for a better view. 
+
+# View the first plot. 
+first_plot 
+
+p1<-first_plot + scale_x_continuous (breaks=c(1,13,25, 37, 49, 61, 73, 85, 97), 
+                                     #name = (Year), 
+                                     labels=c("2009","", 2011, "", "2013","", "2015", "", "2017"))
+p1
+
+p2<- p1 + theme(
+  legend.title = element_blank(),
+  legend.background=element_rect(fill="transparent"))
+p2
+
+p3<-p2 + theme(
+  legend.position = c(0.80, 0.95))
+p3
+
+p4<- p3+ geom_hline(yintercept = 0)
+p4
+
+
+#-----------------------
+
+#MONTHLY SEALEVEL AND WATERLEVEL
+# Libraries
+library(ggplot2)
+library(dplyr)
+library(patchwork) # To display 2 charts together
+library(hrbrthemes)
+
+data <- read.csv("~/1_NCSU_files/ES_400_Mentoring/Student_project/Ian/monthly_fluxes_waterlevel.csv")
+str (data)
+#View (data)
+gwl <- data$gwl
+msl<- data$msl
+series <- data$series
+year<- data$year
+nee<-data$nee
+data = data.frame(gwl, msl, year, nee)
+
+
+p <- ggplot(data, aes(x = series))
+p <- p + 
+  geom_line(aes(y = msl, size="msl", color = "Mean sea level"))+
+  geom_line(aes(y = gwl,  size="gwl", color = "Groundwater table depth "))+
+  #geom_line(aes(y = nee,  size="nee", color = "NEE"))+
+  scale_size_discrete(range = c(2, 2))+
+  #scale_size_continuous(range = 1)+
+  scale_x_continuous(limits=c(1, 132), breaks=seq(1,132,12))+
+  scale_y_continuous(limits=c(-20, 40), breaks=seq(-40,40,10))+
+  xlab("Year") + 
+  ylab("Water level (cm)") +
+  theme_bw(base_family = "Arial", base_size = 18) +
+  theme(panel.grid.minor = element_blank()) +
+  theme(panel.grid.major = element_blank()) + 
+  theme(panel.border = element_rect(size=1, color='black'))
+# coord_flip() # Flipping the coordinates for a better view. 
+
+p
+
+
+p1<-p + scale_x_continuous (breaks=c(1,13,25,37,49,61,73,85,97), 
+                            #name = (Year), 
+                            labels=c("2009","", "2011", "", "2013","", "2015", "", "2017"))
+p1
+
+p2<-p1 + guides(size = FALSE)
+p2
+
+p3<- p2 + theme(
+  legend.title = element_blank())
+p3
+
+p4<-p3 + theme(
+  legend.position = c(0.20, 0.90))
+p4
+
+p5<- p4+ geom_hline(yintercept = 0)
+p5
+
+#-----------------
+
+#RELATIONSHIP BETWEEN WATER LEVELS AND TIDAL LEVEL
+
+#geom_point_with_multiple_lineR2
+
+library(rlang)
+library(ggplot2)
+library(reshape)
+library(ggpmisc)
+library(dplyr) 
+library(ggplot2)
+library(devtools)
+require(ggplot2)
+require(plyr)
+library(ggplot2)
+library(reshape)
+library(ggpmisc)
+library(dplyr) 
+library(ggplot2)
+library(devtools)
+library (RColorBrewer)
+
+my_data <- read.csv("~/1_NCSU_files/ES_400_Mentoring/Student_project/Ian/monthly_fluxes_tide_facet.csv")
+str (my_data)
+
+my_data$level<-as.factor (my_data$level)
+month = my_data$month
+year = my_data$year
+level = my_data$level
+nee = my_data$nee
+gpp = my_data$gpp
+re = my_data$re
+gwl = my_data$gwl
+msl = my_data$msl
+tide = my_data$tide
+tidevalue = my_data$tidevalue
+
+my_data = data.frame(month, year, level, nee, re, gpp, gwl, msl, tide, tidevalue)
+
+
+my_data$tide
+(my_data$tide <- factor(my_data$tide, levels=c('MLW','MHW'),
+                        ordered = TRUE))
+levels(my_data$tide) <- c("Low tide","High tide")
+
+
+formula = y~x
+#formula <- y ~ poly(x, 2)
+#formula= y~exp(x)
+#formula = y~log(x)
+#formula = y~poly(x, 2)
+
+p<- ggplot(my_data, aes(x=tidevalue, y=gwl))+
+  #,color=, fill=tide)) + 
+  geom_point(size = 5, color="orange") +
+  #scale_colour_brewer(palette="Dark2")+
+  #facet_grid(~site, scale="free")+ theme_bw()+ 
+  stat_poly_eq(aes(x=tidevalue, y=gwl, label =  paste(..eq.label.., ..rr.label.., sep = "~~~~")),
+               formula = formula, rr.digits = 2, coef.digits = 3, parse = TRUE, 
+               size = 8,label.x.npc = "left",
+               vstep = 0.05)+ # sets vertical spacing
+  #label.x = 6, label.y = 20)+
+  geom_vline(xintercept = 0)+
+  geom_hline(yintercept = 0)+
+  stat_smooth(method = "lm", formula = y ~ x, size = 1.75, fill="transparent", alpha=0, color="black") +
+  #stat_smooth(method = "lm", formula = y ~ log(x), size = 1, fill="transparent", alpha=0) +
+  #stat_smooth(method = "lm", formula = y ~ poly(x,2), size = 2, fill="transparent", alpha=0) +
+  #stat_smooth(method = "lm", formula = y ~ exp(x), size = 2, fill="transparent", alpha=0) +
+  scale_y_continuous(limits=c(-8, 14), breaks=seq(-8, 10,4)) +
+  scale_x_continuous(limits=c(-30, 50), breaks=seq(-30, 50, 10)) +
+  labs(y=expression(Groundwater~table~depth(cm)))+
+  labs(x=expression(Mean~sea~level~(cm)))+
+  theme_bw(base_family = "Arial", base_size = 22) +
+  theme(panel.grid.minor = element_blank()) +
+  theme(panel.grid.major = element_blank()) + 
+  theme(panel.border = element_rect(size=1, color='black'))
+p
+
+p1 <- p + guides(fill = FALSE, size = FALSE)
+p1
+
+p2<- p1+ theme(legend.background = element_blank(),
+               #legend.text=element_text(size=14),
+               legend.title=element_blank ())
+p2
+
+p3<- p2 + theme(
+  legend.position = c(0.12, 0.90))
+p3
+
+#---------------------------
+#RELATIONSHIP BETWEEN WATER LEVEL AND FLUXES
+#install.packages("rlang")
+
+library(rlang)
+library(ggplot2)
+library(reshape)
+library(ggpmisc)
+library(dplyr) 
+library(ggplot2)
+library(devtools)
+require(ggplot2)
+require(plyr)
+library(ggplot2)
+library(reshape)
+library(ggpmisc)
+library(dplyr) 
+library(ggplot2)
+library(devtools)
+library (RColorBrewer)
+
+my_data <- read.csv("~/1_NCSU_files/ES_400_Mentoring/Student_project/Ian/monthly_fluxes_waterlevel_facet1.csv")
+my_data <- read.csv("~/1_NCSU_files/ES_400_Mentoring/Student_project/Ian/fluxes_climate.csv")
+
+str (my_data)
+
+my_data$wlvar<-as.factor (my_data$wlvar)
+month = my_data$month
+year = my_data$year
+fluxes = my_data$fluxes
+fluxvalue = my_data$fluxvalue
+wl = my_data$wl
+wlvalue = my_data$wlvalue
+wlvar = my_data$wlvar
+slr = my_data$slr
+
+my_data = data.frame(slr, wlvar, month, year, fluxes, fluxvalue, wl, wlvalue)
+
+
+my_data$wlvar
+(my_data$wlvar <- factor(my_data$wlvar, levels=c('Low','High'),
+                         ordered = TRUE))
+
+my_data$fluxes
+(my_data$fluxes <- factor(my_data$fluxes, levels=c('GPP','RE', 'NEE'),
+                          ordered = TRUE))
+
+
+my_data$wl
+(my_data$wl <- factor(my_data$wl, levels=c('gwl','msl'),
+                      ordered = TRUE))
+levels(my_data$wl) <- c("Groundwater level","Mean sea level")
+
+
+formula = y~x
+#formula <- y ~ poly(x, 2)
+#formula= y~exp(x)
+#formula = y~log(x)
+#formula = y~poly(x, 2)
+
+p<- ggplot(my_data, aes(x=wlvalue, y=fluxvalue,color=wl, fill=wl)) + 
+  geom_point(size = 4) +
+  #facet_grid(fluxes~wl, labeller = as_labeller(wl))+theme_bw ()+
+  facet_grid(fluxes~., labeller = as_labeller(wl))+theme_bw ()+
+  stat_poly_eq(aes(x=wlvalue, y=fluxvalue, label =  paste(..eq.label.., ..rr.label.., sep = "~~~~")),
+               formula = formula, rr.digits = 2, coef.digits = 3, parse = TRUE, 
+               size = 4,label.x.npc = "right",
+               vstep = 0.1)+ # sets vertical spacing
+  #label.x = 6, label.y = 20)+
+  geom_vline(xintercept = 0, linetype='dotted', col = 'red')+
+  geom_hline(yintercept = 0, linetype='dotted', col = 'red')+
+  stat_smooth(method = "lm", formula = y ~ x, size = 1.75, fill="transparent", alpha=0) +
+  #stat_smooth(method = "lm", formula = y ~ log(x), size = 1, fill="transparent", alpha=0) +
+  #stat_smooth(method = "lm", formula = y ~ poly(x,2), size = 2, fill="transparent", alpha=0) +
+  #stat_smooth(method = "lm", formula = y ~ exp(x), size = 2, fill="transparent", alpha=0) +
+  #stat_summary(fun.data = "mean_cl_boot") + 
+  scale_y_continuous(limits=c(-5, 20), breaks=seq(-5, 20,5)) +
+  scale_x_continuous(limits=c(-15, 40), breaks=seq(-10, 40, 10)) +
+  labs(y=expression(Groundwater~level~(cm)))+
+  labs(x=expression(Water~level~(cm)))+
+  labs(y=expression(Carbon~fluxes~(g~C~m^{-2}~d^{-1})))+
+  theme_bw(base_family = "Arial", base_size = 22) +
+  theme(panel.grid.minor = element_blank()) +
+  theme(panel.grid.major = element_blank()) + 
+  theme(panel.border = element_rect(size=1, color='black'))
+p
+
+p1<- p+  facet_grid(fluxes ~ wl, labeller = label_context)
+p1
+
+p2<- p1 + scale_color_brewer(palette="Set2")
+p2
+
+p3<- p2+ theme(legend.background = element_blank(),
+               #legend.text=element_text(size=14),
+               legend.title=element_blank ())
+p3
+
+p4<- p3 + theme(
+  legend.position = "none")
+p4
+
+p4<- p3 + theme(
+  legend.position = c(0.05, 0.95))
+p4
+
+
+#-----------------------------------
+
+#RELATIONSHIP AMONG FLUXES AND TIDAL CHANGE
+
+library(rlang)
+library(ggplot2)
+library(reshape)
+library(ggpmisc)
+library(dplyr) 
+library(ggplot2)
+library(devtools)
+library (acc.ggplot2)
+library (trinker)
+library(acc.ggplot2)
+require(ggplot2)
+require(plyr)
+library(ggplot2)
+library(reshape)
+library(ggpmisc)
+library(dplyr) 
+library(ggplot2)
+library(devtools)
+library (RColorBrewer)
+
+my_data <- read.csv("~/1_NCSU_files/ES_400_Mentoring/Student_project/Ian/monthly_fluxes_tidelevel_facet1.csv")
+
+str (my_data)
+
+my_data$tide<-as.factor (my_data$tide)
+month = my_data$month
+year = my_data$year
+fluxes = my_data$fluxes
+fluxvalue = my_data$fluxvalue
+tide = my_data$tide
+tidevalue = my_data$tidevalue
+
+my_data = data.frame(month, year, fluxes, fluxvalue, tide,tidevalue)
+
+
+my_data$tide
+(my_data$tide <- factor(my_data$tide, levels=c('MLW','MHW'),
+                        ordered = TRUE))
+levels(my_data$tide)<-c("Low tide", "High tide")
+
+my_data$fluxes
+(my_data$fluxes <- factor(my_data$fluxes, levels=c('GPP','RE', 'NEE'),
+                          ordered = TRUE))
+
+
+my_data$wl
+(my_data$wl <- factor(my_data$wl, levels=c('gwl','msl'),
+                      ordered = TRUE))
+levels(my_data$wl) <- c("Groundwater level","Mean sea level")
+
+
+formula = y~x
+#formula <- y ~ poly(x, 2)
+#formula= y~exp(x)
+#formula = y~log(x)
+#formula = y~poly(x, 2)
+
+p<- ggplot(my_data, aes(x=tidevalue, y=fluxvalue,color=tide, fill=tide)) + 
+  geom_point(size = 4) +
+  # scale_colour_brewer(palette="Dark2")+
+  #facet_grid(fluxes~wl, labeller = label_parsed)+ theme_bw()+ 
+  facet_grid(~fluxes, labeller = as_labeller(wl))+theme_bw ()+
+  #facet_grid(fluxes ~ wl, labeller = labeller(category = wl))+
+  #scale_colour_discrete(labels = lab1) +
+  #scale_color_discrete(labels = lab1) +
+  #facet_grid(~site, scale="free")+ theme_bw()+ 
+  stat_poly_eq(aes(x=tidevalue, y=fluxvalue, label =  paste(..eq.label.., ..rr.label.., sep = "~~~~")),
+               formula = formula, rr.digits = 2, coef.digits = 3, parse = TRUE, 
+               size = 6,label.x.npc = "right",
+               vstep = 0.1)+ # sets vertical spacing
+  #label.x = 6, label.y = 20)+
+  geom_vline(xintercept = 0, linetype='dotted', col = 'red')+
+  geom_hline(yintercept = 0, linetype='dotted', col = 'red')+
+  stat_smooth(method = "lm", formula = y ~ x, size = 1.75, fill="transparent", alpha=0) +
+  #stat_smooth(method = "lm", formula = y ~ log(x), size = 1, fill="transparent", alpha=0) +
+  #stat_smooth(method = "lm", formula = y ~ poly(x,2), size = 2, fill="transparent", alpha=0) +
+  #stat_smooth(method = "lm", formula = y ~ exp(x), size = 2, fill="transparent", alpha=0) +
+  #stat_summary(fun.data = "mean_cl_boot") + 
+  #labs(y=expression(Number~of~trees~per~ha^{-1})) +
+  scale_y_continuous(limits=c(-5, 20), breaks=seq(-5, 20,5)) +
+  scale_x_continuous(limits=c(-40, 50), breaks=seq(-40, 50, 20)) +
+  #labs(y=expression(ET~(mm~d^{-1})))+
+  #labs(x=expression(ET~(kg~H[2]*O~m^{-2}~d^{-1})))+
+  #labs(y=expression(Aboveground~understory~biomass~(Mg~ha^{-1})))+
+  labs(y=expression(Groundwater~level~(cm)))+
+  labs(x=expression(Mean~tidal~level~(cm)))+
+  #labs(x=expression(ET~(Kg~H[2]*O~m^{-2}~d^{-1})))+
+  labs(y=expression(Carbon~fluxes~(g~C~m^{-2}~d^{-1})))+
+  #labs(y=expression(WUE~(g~C~kg~H[2]*O^{-1})))+
+  theme_bw(base_family = "Arial", base_size = 22) +
+  theme(panel.grid.minor = element_blank()) +
+  theme(panel.grid.major = element_blank()) + 
+  theme(panel.border = element_rect(size=1, color='black'))
+p
+
+p1<- p+  facet_grid(~fluxes, labeller = label_context)
+p1
+
+p2<- p1 + scale_color_brewer(palette="Set2")
+p2
+
+p3<- p2+ theme(legend.background = element_blank(),
+               #legend.text=element_text(size=14),
+               legend.title=element_blank ())
+p3
+
+p4<- p3 + theme(
+  legend.position = c(0.07, 0.10))
+p4
+
+#-----------------------------------
+
