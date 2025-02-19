@@ -1,0 +1,237 @@
+#geom_point_with_multiple_lineR2
+#CLIMATExFLUXES RELATIONSHIPS
+
+library(rlang)
+library(ggplot2)
+library(reshape)
+library(ggpmisc)
+library(dplyr) 
+library(ggplot2)
+library(devtools)
+library (acc.ggplot2)
+library (trinker)
+library(acc.ggplot2)
+require(ggplot2)
+require(plyr)
+library(ggplot2)
+library(reshape)
+library(ggpmisc)
+library(dplyr) 
+library(ggplot2)
+library(devtools)
+library (RColorBrewer)
+
+
+#Globalradiation x fluxes
+
+my_data <- read.csv("~/1_NCSU_files/ES_400_Mentoring/Student_project/Toby/fluxes_climate.csv")
+str (my_data)
+
+my_data$variable<-as.factor (my_data$variable)
+variable = my_data$variable
+value = my_data$value
+Rg = my_data$Rg
+Tair = my_data$Tair
+SWC = my_data$SWC
+
+my_data = data.frame(variable, value, Rg, Tair, SWC)
+
+
+my_data$variable
+(my_data$variable <- factor(my_data$variable, levels=c('GPP','RE', 'NEE'),
+                          ordered = TRUE))
+
+
+formula = y~x
+#formula <- y ~ poly(x, 2)
+#formula= y~exp(x)
+#formula = y~log(x)
+#formula = y~poly(x, 2)
+
+p<- ggplot(my_data, aes(x=Rg, y=value,color=variable, fill=variable)) + 
+  geom_point(size = 2) +
+  facet_grid(~variable)+ theme_bw()+ 
+  stat_poly_eq(aes(x=Rg, y=value, label =  paste(..eq.label.., ..rr.label.., sep = "~~~~")),
+               formula = formula, rr.digits = 2, coef.digits = 3, parse = TRUE, 
+               size = 6,label.x.npc = "right")+
+               #vstep = 0.1)+ # sets vertical spacing
+  #label.x = 6, label.y = 20)+
+  #geom_vline(xintercept = 0, linetype='dotted', col = 'red')+
+  geom_hline(yintercept = 0, linetype='dotted', col = 'red')+
+  stat_smooth(method = "lm", formula = y ~ x, size = 1, fill="transparent", color="black", alpha=0) +
+  #stat_smooth(method = "lm", formula = y ~ log(x), size = 1, fill="transparent", alpha=0) +
+  #stat_smooth(method = "lm", formula = y ~ poly(x,2), size = 2, fill="transparent", alpha=0) +
+  #stat_smooth(method = "lm", formula = y ~ exp(x), size = 2, fill="transparent", alpha=0) +
+  #stat_summary(fun.data = "mean_cl_boot") + 
+  #labs(y=expression(Number~of~trees~per~ha^{-1})) +
+  #scale_y_continuous(limits=c(-5, 20), breaks=seq(-5, 20,5)) +
+  #scale_x_continuous(limits=c(-40, 50), breaks=seq(-40, 50, 20)) +
+  labs(x=expression(Global~radiation~(W~m^{-2})))+
+  labs(y=expression(Carbon~fluxes~(g~C~m^{-2}~d^{-1})))+
+  theme_bw(base_family = "Arial", base_size = 22) +
+  theme(panel.grid.minor = element_blank()) +
+  theme(panel.grid.major = element_blank()) + 
+  theme(panel.border = element_rect(size=1, color='black'))
+p
+
+
+p1<- p + scale_color_brewer(palette="Set2")
+p1
+
+p2<- p1+ theme(legend.background = element_blank(),
+               #legend.text=element_text(size=14),
+               legend.title=element_blank ())
+p2
+
+p3<-p2 + guides(fill = FALSE, color = FALSE)
+p3
+
+#-----------------------------------
+
+#Air temperature x fluxes
+
+my_data <- read.csv("~/1_NCSU_files/ES_400_Mentoring/Student_project/Toby/fluxes_climate.csv")
+str (my_data)
+
+my_data$variable<-as.factor (my_data$variable)
+variable = my_data$variable
+value = my_data$value
+Rg = my_data$Rg
+Tair = my_data$Tair
+SWC = my_data$SWC
+
+my_data = data.frame(variable, value, Rg, Tair, SWC)
+
+
+my_data$variable
+(my_data$variable <- factor(my_data$variable, levels=c('GPP','RE', 'NEE'),
+                            ordered = TRUE))
+
+
+formula = y~x
+#formula <- y ~ poly(x, 2)
+#formula= y~exp(x)
+#formula = y~log(x)
+#formula = y~poly(x, 2)
+
+p<- ggplot(my_data, aes(x=Tair, y=value,color=variable, fill=variable)) + 
+  geom_point(size = 2) +
+  facet_grid(~variable)+ theme_bw()+ 
+  stat_poly_eq(aes(x=Tair, y=value, label =  paste(..eq.label.., ..rr.label.., sep = "~~~~")),
+               formula = formula, rr.digits = 2, coef.digits = 3, parse = TRUE, 
+               size = 6,label.x.npc = "right")+
+  #vstep = 0.1)+ # sets vertical spacing
+  #label.x = 6, label.y = 20)+
+  #geom_vline(xintercept = 0, linetype='dotted', col = 'red')+
+  geom_hline(yintercept = 0, linetype='dotted', col = 'red')+
+  stat_smooth(method = "lm", formula = y ~ x, size = 1.75, fill="transparent", alpha=0) +
+  #stat_smooth(method = "lm", formula = y ~ log(x), size = 1, fill="transparent", alpha=0) +
+  #stat_smooth(method = "lm", formula = y ~ poly(x,2), size = 2, fill="transparent", alpha=0) +
+  #stat_smooth(method = "lm", formula = y ~ exp(x), size = 2, fill="transparent", alpha=0) +
+  #stat_summary(fun.data = "mean_cl_boot") + 
+  #labs(y=expression(Number~of~trees~per~ha^{-1})) +
+  #scale_y_continuous(limits=c(-5, 20), breaks=seq(-5, 20,5)) +
+  #scale_x_continuous(limits=c(-40, 50), breaks=seq(-40, 50, 20)) +
+  #labs(x=expression(Global~radiation~(W~m^{-2})))+
+  labs(x=expression("Air temperature " ~( degree*C)))+
+  labs(y=expression(Carbon~fluxes~(g~C~m^{-2}~d^{-1})))+
+  theme_bw(base_family = "Arial", base_size = 22) +
+  theme(panel.grid.minor = element_blank()) +
+  theme(panel.grid.major = element_blank()) + 
+  theme(panel.border = element_rect(size=1, color='black'))
+p
+
+
+p1<- p + scale_color_brewer(palette="Set2")
+p1
+
+p2<- p1+ theme(legend.background = element_blank(),
+               #legend.text=element_text(size=14),
+               legend.title=element_blank ())
+p2
+
+p3<-p2 + guides(fill = FALSE, color = FALSE)
+p3
+
+#-----------------------------------
+
+#USE THIS IN THE PAPER ES400
+#Waterlevel x fluxes
+
+my_data <- read.csv("~/1_NCSU_files/ES_400_Mentoring/Student_project/Toby/fluxes_climate_2.csv")
+str (my_data)
+
+my_data$variable<-as.factor (my_data$variable)
+variable = my_data$variable
+value = my_data$value
+Rg = my_data$Rg
+Tair = my_data$Tair
+SWC = my_data$SWC
+WL=my_data$WL
+season = my_data$season
+my_data = data.frame(variable, value, Rg, Tair, SWC, WL, season)
+
+
+my_data$variable
+(my_data$variable <- factor(my_data$variable, levels=c('GPP','RE', 'NEE'),
+                            ordered = TRUE))
+
+my_data$season
+(my_data$season <- factor(my_data$season, levels=c('GS','NGS'),
+                            ordered = TRUE))
+
+levels(my_data$season) <- c("Growing season", "Non-growing season")
+
+
+formula = y~x
+#formula <- y ~ poly(x, 2)
+#formula= y~exp(x)
+#formula = y~log(x)
+formula = y~poly(x, 2)
+
+p<- ggplot(my_data, aes(x=WL, y=value,color=season, fill=season)) + 
+  geom_point(size = 2) +
+  facet_grid(~variable)+ theme_bw()+ 
+  stat_poly_eq(aes(x=WL, y=value, label =  paste(..eq.label.., ..rr.label.., sep = "~~~~")),
+               formula = formula, rr.digits = 2, coef.digits = 3, parse = TRUE, 
+               size = 4,label.x.npc = "right")+
+  #vstep = 0.1)+ # sets vertical spacing
+  #label.x = 6, label.y = 20)+
+  geom_vline(xintercept = 0, linetype='dotted', col = 'red')+
+  geom_hline(yintercept = 0, linetype='dotted', col = 'red')+
+  stat_smooth(method = "lm", formula = y ~ poly (x,2), size = 1.75, fill="transparent", alpha=0.5) +
+  #stat_smooth(method = "lm", formula = y ~ log(x), size = 1, fill="transparent", alpha=0) +
+  #stat_smooth(method = "lm", formula = y ~ poly(x,2), size = 2, fill="transparent", alpha=0) +
+  #stat_smooth(method = "lm", formula = y ~ exp(x), size = 2, fill="transparent", alpha=1) +
+  #stat_summary(fun.data = "mean_cl_boot") + 
+  #labs(y=expression(Number~of~trees~per~ha^{-1})) +
+  scale_y_continuous(limits=c(-10, 35), breaks=seq(-10, 35,10)) +
+  scale_x_continuous(limits=c(-10, 20), breaks=seq(-10, 20, 10)) +
+  labs(x=expression(GroundWater~table~depth~(cm)))+
+  #labs(x=expression(Global~radiation~(W~m^{-2})))+
+  #labs(x=expression("Air temperature " ~( degree*C)))+
+  labs(y=expression(Carbon~fluxes~(g~C~m^{-2}~d^{-1})))+
+  theme_bw(base_family = "Arial", base_size = 22) +
+  theme(panel.grid.minor = element_blank()) +
+  theme(panel.grid.major = element_blank()) + 
+  theme(panel.border = element_rect(size=1, color='black'))
+p
+
+
+p1<- p + scale_color_brewer(palette="Set2")
+p1
+
+p2<- p1+ theme(legend.background = element_blank(),
+               legend.text=element_text(size=12),
+               legend.title=element_blank ())
+p2
+
+p3<- p2 + theme(
+  legend.position = c(0.10, 0.10))
+p3
+
+
+p3<-p2 + guides(fill = FALSE, color = FALSE)
+p3
+
+#-----------------------------------
