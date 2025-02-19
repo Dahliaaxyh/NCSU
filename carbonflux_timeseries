@@ -1,0 +1,71 @@
+#timeseries_monthly_smooth
+
+library (dplyr)
+library(readr)
+library(ggplot2)
+library(reshape2)
+library(readr)
+library(multcompView)
+library(ggplot2)
+library(reshape2)
+library(forcats)
+library (tidyverse)
+library (dplyr)
+library(readr)
+
+
+climate <- read.csv("~/1_NCSU_files/ES_400_Mentoring/Student_project/Toby/climate.csv")
+climate <- read.csv("~/1_NCSU_files/ES_400_Mentoring/Student_project/Toby/daily_ar1.csv")
+
+str(climate)
+#meltdf <- melt(climate,id="series")
+
+series = climate$series
+value = climate$value
+variable=climate$variable
+data = data.frame (series, value, variable)
+
+data$variable
+(data$variable <- factor(data$variable, levels=c('GPP','RE', 'NEE'), ordered = TRUE))
+
+levels(data$variable) <- c(expression(GPP~(g~C~m^{-2}*d^{-1})),
+                           expression(RE~(g~C~m^{-2}*d^{-1})),
+                           expression(NEE~(g~C~m^{-2}*d^{-1})))
+
+
+
+#plotting
+
+p<-ggplot(data,aes(x=series,y=value, color=variable, group=variable)) + 
+  geom_line(size=1)+
+  facet_grid (variable~., scales='free')+
+  labs(y=expression(Carbon~fluxes))+
+  #scale_color_discrete(labels = lab1) +
+  theme_bw(base_family = "Arial", base_size = 18) +
+  theme(panel.grid.minor = element_blank()) +
+  theme(panel.grid.major = element_blank()) + 
+  theme(panel.border = element_rect(size=1, color='black'))
+
+p
+
+#set the axis label in between ticks
+p1<-p+ theme(axis.text.x = element_text(hjust=-0.5))
+p1
+
+#set the years label
+p2<- p1 + scale_x_continuous (breaks=c(1,366,731, 1096, 1461, 1826, 2191, 2556, 2921, 3286), 
+                              name = ("Year"), 
+                              labels=c("2009","", "2011", "", "2013", "", "2015", "","2017",""))
+p2
+
+#fixing the label units
+p3<-p2 + facet_grid(variable~.,scale='free', labeller=label_parsed)
+p3
+
+#remove the legends
+p4<-p3 + theme(legend.position="none")
+p4
+
+p5<- p4 + scale_color_brewer(palette="Dark2")
+p5
+
