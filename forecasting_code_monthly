@@ -1,0 +1,201 @@
+STANTON_MONTHLY
+
+library(forecast)
+
+##FORECASTING NEE
+
+forecast_nee <- read.csv("~/1_NCSU_files/ES_400_Mentoring/Student_project/Stanton/nee.csv")
+
+summary(forecast_nee)
+plot (forecast_nee)
+
+#Decompose the Data Into Four Components
+tsdata <- ts(forecast_nee, frequency = 12) 
+tsdata <- ts(forecast_nee, start = 2009, end=2017, freq = 12) 
+plot (tsdata)
+
+ddata <- decompose(tsdata, "multiplicative")
+plot(ddata)
+
+#Plot the Different Components Individually
+plot(ddata$trend)
+
+plot(ddata$seasonal)
+
+plot(ddata$random)
+
+
+#Plot a Trendline on the Original Dataset
+plot(forecast_nee)
+
+abline(reg=lm(forecast_nee$NEE~forecast_nee$year))
+
+#Build the ARIMA Model Using auto.arima() Function
+
+forecast_neeTS = ts(forecast_nee)
+mymodel = auto.arima(forecast_neeTS[,2])
+mymodel
+summary (mymodel)
+
+#Plot the Residuals
+plot.ts(mymodel$residuals)
+
+#Forecast the Values for the Next 13 Years (up to 2030)
+myforecast <- forecast(mymodel, level=c(95), h=13*12)
+
+plot(myforecast, xlab="Year", ylab="NEE")
+
+#to fix x axis labels
+plot(myforecast, xlab="Year", ylab="NEE", xaxt="n", yaxt="n")
+
+x <- seq(1,11,1)
+x <- seq.Date(as.Date("2017-01-01"), as.Date("2017-11-01"), "months")
+myforecast <- forecast(mymodel, level=c(95), h=13*12)
+myforecast
+
+par(mar = c(5, 5.2, 5, 5))
+layout(1:1)
+plot(myforecast, 
+     #xaxt='n',
+     xlim=c(2010,2030+11/12), 
+     main = "", xlab = "Year", 
+     ylab= expression(Cumulative~NEE~(g~C~m^{-2}~d^{-1})))
+
+par(new = TRUE)
+plot(myforecast, xaxt="n", yaxt="n")
+abline(h=0, col="black")
+
+#-----------------------
+
+##FORECASTING GPP
+
+forecast_gpp <- read.csv("~/1_NCSU_files/ES_400_Mentoring/Student_project/Stanton/gpp.csv")
+
+summary(forecast_gpp)
+plot (forecast_gpp)
+
+#Decompose the Data Into Four Components
+tsdata <- ts(forecast_gpp, frequency = 12) 
+tsdata <- ts(forecast_gpp, start = 2009, end=2017, freq = 12) 
+plot (tsdata)
+
+ddata <- decompose(tsdata, "multiplicative")
+plot(ddata)
+
+#Plot the Different Components Individually
+plot(ddata$trend)
+
+plot(ddata$seasonal)
+
+plot(ddata$random)
+
+
+#Plot a Trendline on the Original Dataset
+plot(forecast_gpp)
+
+abline(reg=lm(forecast_gpp$GPP~forecast_gpp$year))
+
+#Build the ARIMA Model Using auto.arima() Function
+
+forecast_gppTS = ts(forecast_gpp)
+mymodel = auto.arima(forecast_gppTS[,2])
+mymodel
+summary (mymodel)
+
+#Plot the Residuals
+plot.ts(mymodel$residuals)
+
+#Forecast the Values for the Next 13 Years (up to 2030)
+myforecast <- forecast(mymodel, level=c(95), h=13*12)
+
+plot(myforecast, xlab="Year", ylab="GPP")
+
+#to fix x axis labels
+plot(myforecast, xlab="Year", ylab="GPP", xaxt="n", yaxt="n")
+
+x <- seq(1,11,1)
+x <- seq.Date(as.Date("2017-01-01"), as.Date("2017-11-01"), "months")
+myforecast <- forecast(mymodel, level=c(95), h=13*12)
+myforecast
+
+par(mar = c(5, 5.2, 5, 5))
+layout(1:1)
+plot(myforecast, 
+     #xaxt='n',
+     xlim=c(2010,2030+11/12), 
+     main = "", xlab = "Year", 
+     ylab= expression(Cumulative~GPP~(g~C~m^{-2}~d^{-1})))
+
+par(new = TRUE)
+plot(myforecast, xaxt="n", yaxt="n")
+#abline(h=0, col="black")
+
+#-----------------------
+
+##FORECASTING RE
+
+forecast_re <- read.csv("~/1_NCSU_files/ES_400_Mentoring/Student_project/Stanton/re.csv")
+
+summary(forecast_re)
+plot (forecast_re)
+
+#Decompose the Data Into Four Components
+tsdata <- ts(forecast_re, frequency = 12) 
+tsdata <- ts(forecast_re, start = 2009, end=2017, freq = 12) 
+plot (tsdata)
+
+ddata <- decompose(tsdata, "multiplicative")
+plot(ddata)
+
+#Plot the Different Components Individually
+plot(ddata$trend)
+
+plot(ddata$seasonal)
+
+plot(ddata$random)
+
+
+#Plot a Trendline on the Original Dataset
+plot(forecast_re)
+
+abline(reg=lm(forecast_re$RE~forecast_re$year))
+
+#Build the ARIMA Model Using auto.arima() Function
+
+forecast_reTS = ts(forecast_re)
+mymodel = auto.arima(forecast_reTS[,2])
+mymodel
+summary (mymodel)
+coefficients (mymodel)
+accuracy (mymodel)
+
+#Plot the Residuals
+plot.ts(mymodel$residuals)
+
+#Forecast the Values for the Next 13 Years (up to 2030)
+myforecast <- forecast(mymodel, level=c(95), h=13*12)
+
+plot(myforecast, xlab="Year", ylab="RE")
+
+#to fix x axis labels
+plot(myforecast, xlab="Year", ylab="RE", xaxt="n", yaxt="n")
+
+#fixing the labels
+x <- seq(1,11,1)
+x <- seq.Date(as.Date("2017-01-01"), as.Date("2017-11-01"), "months")
+myforecast <- forecast(mymodel, level=c(95), h=13*12)
+myforecast
+
+par(mar = c(5, 5.2, 5, 5))
+layout(1:1)
+plot(myforecast, 
+     #xaxt='n',
+     xlim=c(2010,2030+11/12), 
+     main = "", xlab = "Year", 
+     ylab= expression(Cumulative~RE~(g~C~m^{-2}~d^{-1})))
+
+par(new = TRUE)
+plot(myforecast, xaxt="n", yaxt="n")
+#abline(h=0, col="black")
+
+#-----------------------
